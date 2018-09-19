@@ -2,9 +2,12 @@ import discord
 from discord.ext import commands
 import time
 import json
+import libneko
 import asyncio
+import logging
 
 
+logging.basicConfig(level='INFO')
 bot = commands.Bot(command_prefix=';', description='bruh.')
 
 def is_owner():
@@ -36,7 +39,7 @@ async def on_command_error(ctx, error):
     cause = error.__cause__ if error.__cause__ else error
 
     if isinstance(cause, commands.CheckFailure):
-        await ctx.send(embed=discord.Embed(title='That command is for <@268085347462676480> only!'))
+        await ctx.send(embed=libneko.Embed(title='That command is for <@268085347462676480> only!'))
 
 
 @bot.listen()
@@ -73,14 +76,14 @@ async def presence(ctx, *, newpresence):
     """Change presence (Bot Owner Only)"""
     game = discord.Game(f"{newpresence}")
     await bot.change_presence(activity=game)
-    await ctx.send(embed=discord.Embed(title=f'Set presence to `{newpresence}`'))
+    await ctx.send(embed=libneko.Embed(title=f'Set presence to `{newpresence}`'))
 
 @bot.command()
 async def suggest(ctx, *, suggestion):
     """Suggest a feature to <@268085347462676480>"""
     creator = (await bot.application_info()).owner
     await creator.send(f"New suggestion from {ctx.message.author.mention}: {suggestion}")
-    embed=discord.Embed(title=f'Your suggestion has been sent: {suggestion}')
+    embed=libneko.Embed(title=f'Your suggestion has been sent: {suggestion}')
     embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
     await ctx.send(embed=embed)
 
@@ -91,7 +94,7 @@ async def avatar(ctx, *, user: discord.Member = None):
     if user is None:
         user = ctx.author
 
-    embed=discord.Embed(title=f"{user.name}\'s avatar", url=f"{user.avatar_url_as(size=1024)}")
+    embed=libneko.Embed(title=f"{user.name}\'s avatar", url=f"{user.avatar_url_as(size=1024)}")
     embed.set_image(url=f"{user.avatar_url_as(size=1024)}")
     embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
     await ctx.send(embed=embed)
@@ -100,7 +103,7 @@ async def avatar(ctx, *, user: discord.Member = None):
 async def serverinfo(ctx):
     """Get info about the current server"""
     dt = ctx.guild.created_at
-    embed = discord.Embed(title=ctx.guild.name)
+    embed = libneko.Embed(title=ctx.guild.name)
     embed.add_field(name="Server Name:", value=ctx.guild.name, inline=True)
     embed.add_field(name="Server Owner:", value=f"{ctx.guild.owner}", inline=True)
     embed.add_field(name="Members:", value=f"{ctx.guild.member_count}", inline=True)
@@ -115,7 +118,7 @@ async def userinfo(ctx, *, user: discord.Member = None):
     """Get info about a user"""
     if user is None:
         user = ctx.author
-    embed = discord.Embed(title=f"{user.name}#{user.discriminator}")
+    embed = libneko.Embed(title=f"{user.name}#{user.discriminator}")
     embed.add_field(name="ID:", value=user.id, inline=True)
     embed.add_field(name="Nickname:", value=user.nick, inline=True)
     embed.add_field(name="Mention:", value=user.mention, inline=True)
