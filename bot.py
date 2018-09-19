@@ -27,6 +27,8 @@ with open('token.txt') as fp:
 
 #Defines a bot's prefix and description. There is one predefined command in the bot, the help command. This command shows you the full list of commands you have created.
 
+bot.load_extension('libneko.extras.superuser')
+
 @bot.event
 async def on_ready():
     game = discord.Game(f"with {len(bot.guilds)} servers")
@@ -39,7 +41,7 @@ async def on_command_error(ctx, error):
     cause = error.__cause__ if error.__cause__ else error
 
     if isinstance(cause, commands.CheckFailure):
-        await ctx.send(embed=libneko.Embed(title='That command is for <@268085347462676480> only!'))
+        await ctx.send(embed=libneko.Embed(title='That command is for @Infinite#0420 only!'))
 
 
 @bot.listen()
