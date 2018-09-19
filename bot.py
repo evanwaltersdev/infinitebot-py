@@ -130,5 +130,14 @@ async def userinfo(ctx, *, user: discord.Member = None):
     embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
     await ctx.send(embed=embed)
 
+@bot.command()
+async def git(ctx, *, user: discord.Member = None):
+    """Link to Berg's git repo"""
+    if user is None:
+        user = ctx.author
+    await ctx.send(f"{user.mention}, https://github.com/evanwaltersdev/infinitebot-py")
+
+
+
 
 bot.run(token)
