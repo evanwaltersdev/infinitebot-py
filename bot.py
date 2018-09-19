@@ -27,7 +27,7 @@ with open('token.txt') as fp:
 
 @bot.event
 async def on_ready():
-    game = discord.Game("with the API")
+    game = discord.Game(f"with {len(bot.guilds)} servers")
     await bot.change_presence(activity=game)
     print("I\'m here!")
 
@@ -81,14 +81,50 @@ async def suggest(ctx, *, suggestion):
     """Suggest a feature to <@268085347462676480>"""
     creator = (await bot.application_info()).owner
     await creator.send(f"New suggestion from {ctx.message.author.mention}: {suggestion}")
-    await ctx.send(embed=libneko.Embed(title=f'Your suggestion has been sent: {suggestion}'))
+    embed=libneko.Embed(title=f'Your suggestion has been sent: {suggestion}')
+    embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
+    await ctx.send(embed=embed)
+
 
 @bot.command()
-@is_owner()
-async def update(ctx):
-    with ctx.typing():
-        await ctx.bot.update()
+async def avatar(ctx, *, user: discord.Member = None):
+    """ Get the avatar of you or someone else """
+    if user is None:
+        user = ctx.author
 
+    embed=libneko.Embed(title=f"{user.name}\'s avatar", url=f"{user.avatar_url_as(size=1024)}")
+    embed.set_image(url=f"{user.avatar_url_as(size=1024)}")
+    embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def serverinfo(ctx):
+    """Get info about the current server"""
+    dt = ctx.guild.created_at
+    embed = libneko.Embed(title=ctx.guild.name)
+    embed.add_field(name="Server Name:", value=ctx.guild.name, inline=True)
+    embed.add_field(name="Server Owner:", value=f"{ctx.guild.owner}", inline=True)
+    embed.add_field(name="Members:", value=f"{ctx.guild.member_count}", inline=True)
+    embed.add_field(name="Server Region:", value=f"{ctx.guild.region}", inline=True)
+    embed.add_field(name="Created at:", value=dt.strftime('%d/%m/%y at %H:%M'), inline=True)
+    embed.set_thumbnail(url=ctx.guild.icon_url)
+    embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def userinfo(ctx, *, user: discord.Member = None):
+    """Get info about a user"""
+    if user is None:
+        user = ctx.author
+    embed = discord.Embed(title=f"{user.name}#{user.discriminator}")
+    embed.add_field(name="ID:", value=user.id, inline=True)
+    embed.add_field(name="Nickname:", value=user.nick, inline=True)
+    embed.add_field(name="Mention:", value=user.mention, inline=True)
+    embed.add_field(name="Joined at:", value=user.joined_at.strftime('%d/%m/%y at %H:%M'), inline=True)
+    embed.add_field(name="Created at:", value=user.created_at.strftime('%d/%m/%y at %H:%M'), inline=True)
+    embed.set_thumbnail(url=user.avatar_url_as(size=1024))
+    embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
+    await ctx.send(embed=embed)
 
 
 bot.run(token)
