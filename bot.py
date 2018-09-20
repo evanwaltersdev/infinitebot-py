@@ -147,6 +147,7 @@ async def git(ctx, *, user: discord.Member = None):
     """Link to Berg's git repo"""
     if user is None:
         user = ctx.author
+    await ctx.message.delete()
     await ctx.send(f"{user.mention}, https://github.com/evanwaltersdev/infinitebot-py")
 
 
