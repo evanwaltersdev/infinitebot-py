@@ -44,15 +44,15 @@ async def on_command_error(ctx, error):
         await ctx.send(embed=libneko.Embed(title='That command is for @Infinite#0420 only!'))
 
 
-@bot.listen()
-async def on_message(message):
-    if message.author == bot.user:
-        return
+#@bot.listen()
+#async def on_message(message):
+    #if message.author == bot.user:
+        #return
 
-    content = message.content.lower()
-    for word, response in words.items():
-        if content.startswith(word.lower()):
-            return await message.channel.send(f'{message.author.mention}, {response}')
+    #content = message.content.lower()
+    #for word, response in words.items():
+        #if content.startswith(word.lower()):
+            #return await message.channel.send(f'{message.author.mention}, {response}')
 
 
 
