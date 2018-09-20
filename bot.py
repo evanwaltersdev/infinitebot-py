@@ -69,8 +69,20 @@ async def say(ctx, *, something):
 
 @bot.command()
 async def ping(ctx):
-    """Pong!"""
-    await ctx.send("Pong!")
+    # Time the time required to send a message first.
+    # This is the time taken for the message to be sent, awaited, and then
+    # for discord to send an ACK TCP header back to you to say it has been
+    # received; this is dependant on your bot's load (the event loop latency)
+    # and generally how shit your computer is, as well as how badly discord
+    # is behaving.
+    start = time.monotonic()
+    msg = await ctx.send('Pinging...')
+    millis = (time.monotonic() - start) * 1000
+
+    # Since sharded bots will have more than one latency, this will average them if needed.
+    heartbeat = ctx.bot.latency * 1000
+
+    await msg.edit(content=f'Heartbeat: {heartbeat:,.2f}ms\tACK: {millis:,.2f}ms.')
 
 @bot.command()
 @is_owner()
