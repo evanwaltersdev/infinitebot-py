@@ -5,6 +5,7 @@ import json
 import libneko
 import asyncio
 import logging
+from datetime import datetime
 
 
 logging.basicConfig(level='INFO')
@@ -57,6 +58,43 @@ async def on_command_error(ctx, error):
 
 
 #The @bot.event defines a bot event. The on_ready event occurs when the bot is ready / is logged in to the Client. In this example, the "I'm here!" message will be printed to the console.
+
+def format_seconds(total_seconds: float, *, precision: int=None) -> str:
+    """
+    Formats a number of seconds into meaningful units.
+
+    If precision is specified as an int, then only this many of the largest non-zero
+    units will be output in the string. Else, all will:
+
+        >>> age = datetime.utcnow() - user.created_at
+        >>> age_string = format_seconds(age.total_seconds(), precision=3)
+        >>> print(age_string)
+        33 days, 14 minutes, 12 seconds
+    """
+
+    mins, secs = divmod(total_seconds, 60)
+    hrs, mins = divmod(mins, 60)
+    days, hrs = divmod(hrs, 24)
+    months, days = divmod(days, 30)
+    years, months = divmod(months, 12)
+
+    fmt = lambda n, word: n and f'{n:.0f} {word}{int(n) - 1 and "s" or ""}' or ''
+
+    queue = [
+        fmt(years, 'year'),
+        fmt(months, 'month'),
+        fmt(days, 'day'),
+        fmt(hrs, 'hour'),
+        fmt(mins, 'minute'),
+        fmt(secs, 'second')
+    ]
+    queue = [*filter(None, queue)]
+
+    if precision:
+        queue = queue[:precision]
+
+    return ', '.join(queue) or 'just now'
+
 
 @bot.command()
 async def say(ctx, *, something):
@@ -150,7 +188,21 @@ async def git(ctx, *, user: discord.Member = None):
     await ctx.message.delete()
     await ctx.send(f"{user.mention}, https://github.com/evanwaltersdev/infinitebot-py")
 
+@bot.command()
+async def accountage(ctx, *, user: discord.Member = None):
+    """Determines age of account"""
 
+    if user is None:
+        user = ctx.author
+        name = "Your"
+    else:
+        name = f"{user.mention}\'s"
+    created = datetime.utcnow() - user.created_at
+    created_string = format_seconds(created.total_seconds(), precision=3)
+    description = f"{name} account was created {created_string} ago!"
+    embed = libneko.Embed(description=description)
+    embed.set_footer(text=f"Requested by {ctx.author}", icon_url=f"{ctx.author.avatar_url_as(size=1024)}")
+    await ctx.send(embed=embed)
 
 
 bot.run(token)
