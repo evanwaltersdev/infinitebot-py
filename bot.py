@@ -205,4 +205,33 @@ async def accountage(ctx, *, user: discord.Member = None):
     await ctx.send(embed=embed)
 
 
+@bot.command()
+@commands.has_permissions(manage_messages=True)
+async def purge(ctx, num=None):
+        """Purges a specified number of messages from the current channel."""
+        await ctx.message.delete()
+        username = ctx.message.mentions
+        try:
+            purge = int(num)
+        except (ValueError, TypeError):
+            purge = 100
+        if len(username) == 0:
+            if num == None:
+                deleted = await ctx.channel.purge(
+                    limit=100, check=lambda m: m.author == ctx.bot.user
+                )
+            else:
+                deleted = await ctx.channel.purge(limit=int(purge))
+        else:
+            deleted = await ctx.channel.purge(
+                limit=int(purge), check=lambda m: m.author == username[0]
+            )
+        await ctx.send(
+            embed=discord.Embed(
+                title=f"Deleted {len(deleted)} message(s)", color=0x9013fe
+            ),
+            delete_after=10,
+        )
+
+
 bot.run(token)
