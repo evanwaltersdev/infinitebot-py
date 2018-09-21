@@ -42,7 +42,7 @@ async def on_command_error(ctx, error):
     cause = error.__cause__ if error.__cause__ else error
 
     if isinstance(cause, commands.CheckFailure):
-        await ctx.send(embed=libneko.Embed(title='That command is for @Infinite#0420 only!'))
+        await ctx.send(embed=libneko.Embed(title='You don\'t have permission to run that command!'))
 
 
 #@bot.listen()
